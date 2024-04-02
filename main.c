@@ -9,6 +9,8 @@ int main(int argc, char** argv) {
 
     /* store correct.txt into a 2d int array */
 
+    /* create stack with all available frames */
+
     /* while loop */
 
     /* read logical address from file addresses.txt */
@@ -25,7 +27,7 @@ int main(int argc, char** argv) {
     /* if page fault, load from backing store */
     //increment page fault
 
-    // 
+    // remove page from stack and use it
 
     /* get physical address */
 
