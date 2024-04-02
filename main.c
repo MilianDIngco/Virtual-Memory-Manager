@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+int check(int* bitmap, int pos) {
+    return *bitmap & (1 << pos);
+}
+
 int main(int argc, char** argv) {
 
     /* store correct.txt into a 2d int array */
@@ -20,6 +24,8 @@ int main(int argc, char** argv) {
 
     /* if page fault, load from backing store */
     //increment page fault
+
+    // 
 
     /* get physical address */
 
