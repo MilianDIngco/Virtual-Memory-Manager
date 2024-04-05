@@ -8,6 +8,7 @@
 #define N_PAGE 256
 
 int TLB[TLB_SIZE][2];		//[PAGE #][FRAME #]
+int TLB_counter = 0;
 int PAGE_TABLE[N_PAGE][2];	//[PAGE #][VALID/INVALID BIT]
 int AVAIL_FRAME[N_PAGE];
 int stack_head = N_PAGE;	
@@ -150,7 +151,10 @@ int main(int argc, char** argv) {
 			PAGE_TABLE[frame_num][0] = page_num;	
 			//sets valid/invalid bit to 1
 			PAGE_TABLE[frame_num][1] = 1;
-
+			//Add it to the TLB
+			TLB[TLB_counter][0] = page_num;
+			TLB[TLB_counter][1] = frame_num;
+			TLB_counter = (TLB_counter + 1) % TLB_SIZE;
 			//printf("%d %d\n", frame_num, page_num);
 
 		}
