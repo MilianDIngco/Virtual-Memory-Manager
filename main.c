@@ -89,100 +89,101 @@ int main(int argc, char** argv) {
 	fp = fopen(argv[1], "rt");
 	int logical_address = 0;
 	while(fscanf(fp, "%d", &logical_address) != -1) {
-    /* read logical address from file addresses.txt */
-	
-	//printf("%d\n", logical_address);
+		/* read logical address from file addresses.txt */
+		
+		//printf("%d\n", logical_address);
 
-    // extract offset value teehee
-		int offset = 0;
-		for(int i = 0; i < 8; i++){
-			offset += check(&logical_address, i);
-		}
+		// extract offset value teehee
+			int offset = 0;
+			for(int i = 0; i < 8; i++){
+				offset += check(&logical_address, i);
+			}
 
-	// extract page number hoohoo
-		int page_num = 0;
-		for(int i = 8; i < 16; i++) {
-			page_num += (check(&logical_address, i) >> 8);
-		}
+		// extract page number hoohoo
+			int page_num = 0;
+			for(int i = 8; i < 16; i++) {
+				page_num += (check(&logical_address, i) >> 8);
+			}
 
-	
-	int frame_num = -1;
-    /* check TLB */
-	for(int i = 0; i < TLB_SIZE; i++) {
-		if(TLB[i][0] == page_num) {
-			//increment page hit
-			page_hit++;
-			frame_num = TLB[i][1];
-			break;
-		}
-
-    /* if TLB miss check page table */
-	//USES INVERTED PAGE TABLE
-	// loop through page table until find page number, return index
-	if(frame_num < 0) {
-		for(int i = 0; i < N_PAGE; i++) {
-			if(PAGE_TABLE[i][0] == page_num && PAGE_TABLE[i][1] != 0) {
-				frame_num = i;
-				//printf("found: %d %d\n", i, page_num);
+		
+		int frame_num = -1;
+		/* check TLB */
+		for(int i = 0; i < TLB_SIZE; i++) {
+			if(TLB[i][0] == page_num) {
+				//increment page hit
+				page_hit++;
+				frame_num = TLB[i][1];
 				break;
 			}
 		}
-	}
-	
-	int physical_address;
-    /* if page fault, load from backing store */
-    if(frame_num == -1) {
-		//increment page fault
-		n_pagefault++;
-		// remove page from stack and use it
-		if(!is_empty()) {
-			frame_num = pop();
-		} else {
-			//select frame to replace using page replacement algorithm
-			frame_num = 0; 	//FOR NOW JUST REPLACES FRAME 0 
-			printf("RAN OUT OF FRAMES");
+
+		/* if TLB miss check page table */
+		//USES INVERTED PAGE TABLE
+		// loop through page table until find page number, return index
+		if(frame_num < 0) {
+			for(int i = 0; i < N_PAGE; i++) {
+				if(PAGE_TABLE[i][0] == page_num && PAGE_TABLE[i][1] != 0) {
+					frame_num = i;
+					//printf("found: %d %d\n", i, page_num);
+					break;
+				}
+			}
 		}
 		
-		//LOADS FRAME INTO PHYSICAL MEMORY
-		//Adds it to page table
-		PAGE_TABLE[frame_num][0] = page_num;	
-		//sets valid/invalid bit to 1
-		PAGE_TABLE[frame_num][1] = 1;
+		int physical_address;
+		/* if page fault, load from backing store */
+		if(frame_num == -1) {
+			//increment page fault
+			n_pagefault++;
+			// remove page from stack and use it
+			if(!is_empty()) {
+				frame_num = pop();
+			} else {
+				//select frame to replace using page replacement algorithm
+				frame_num = 0; 	//FOR NOW JUST REPLACES FRAME 0 
+				printf("RAN OUT OF FRAMES");
+			}
+			
+			//LOADS FRAME INTO PHYSICAL MEMORY
+			//Adds it to page table
+			PAGE_TABLE[frame_num][0] = page_num;	
+			//sets valid/invalid bit to 1
+			PAGE_TABLE[frame_num][1] = 1;
 
-		//printf("%d %d\n", frame_num, page_num);
+			//printf("%d %d\n", frame_num, page_num);
 
-	}
-
-    /* get physical address */
-	physical_address = (frame_num << 8) + offset;
-
-	//get physical value
-	FILE* bstorefp = fopen("BACKING_STORE.bin", "rb");
-	fseek(bstorefp, logical_address, SEEK_SET);
-	char value;
-
-	fread(&value, sizeof(char), 1, bstorefp);
-
-    /* compare logical and physical address from correct array  */
-	for(int i = 0; i < n_row; i++) {
-		if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address && correct_array[i][2] == (int)value) {
-			is_correct++;
-			break;
 		}
-	}
 
-    /* sprintf logical address to out1.txt */
-	FILE* out = fopen("out1.txt", "a");
-    fprintf(out, "%d", logical_address);
-	fclose(out);
-	/* sprintf physical address to out2.txt */
-	out = fopen("out2.txt", "a");
-	fprintf(out, "%d", physical_address);
-	fclose(out);
-    /* sprintf byte value to out3.txt */
-	out = fopen("out3.txt", "a");
-	fprintf(out, "0");
-	fclose(out);
+		/* get physical address */
+		physical_address = (frame_num << 8) + offset;
+
+		//get physical value
+		FILE* bstorefp = fopen("BACKING_STORE.bin", "rb");
+		fseek(bstorefp, logical_address, SEEK_SET);
+		char value;
+
+		fread(&value, sizeof(char), 1, bstorefp);
+
+		/* compare logical and physical address from correct array  */
+		for(int i = 0; i < n_row; i++) {
+			if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address && correct_array[i][2] == (int)value) {
+				is_correct++;
+				break;
+			}
+		}
+
+		/* sprintf logical address to out1.txt */
+		FILE* out = fopen("out1.txt", "a");
+		fprintf(out, "%d", logical_address);
+		fclose(out);
+		/* sprintf physical address to out2.txt */
+		out = fopen("out2.txt", "a");
+		fprintf(out, "%d", physical_address);
+		fclose(out);
+		/* sprintf byte value to out3.txt */
+		out = fopen("out3.txt", "a");
+		fprintf(out, "0");
+		fclose(out);
 	}
 
 	// printf("---------------------------------------------");
@@ -195,5 +196,4 @@ int main(int argc, char** argv) {
 
 	
     return 0;
-
 }
