@@ -11,7 +11,7 @@ int TLB[TLB_SIZE][2];		//[PAGE #][FRAME #]
 int TLB_counter = 0;
 int PAGE_TABLE[N_PAGE][2];	//[PAGE #][VALID/INVALID BIT]
 int AVAIL_FRAME[N_PAGE];
-int stack_head = N_PAGE - 1;	
+int stack_head = N_PAGE;	
 char P_MEM[P_MEM_SIZE];
 int n_pagefault = 0;
 int tlb_hit = 0;
@@ -25,7 +25,8 @@ int check(int* bitmap, int pos) {
 }
 
 int pop() {
-	int frame_num = AVAIL_FRAME[stack_head--];
+	int frame_num = AVAIL_FRAME[stack_head];
+	AVAIL_FRAME[stack_head--] = -1;
 	return frame_num;
 }
 
@@ -46,7 +47,7 @@ int main(int argc, char** argv) {
 
 	/* set available frame stack*/
 	for(int i = 0; i < N_PAGE; i++) {
-		AVAIL_FRAME[i] = N_PAGE - 1 - i;
+		AVAIL_FRAME[i] = 256 - i;
 	}
 
 	/* set TLB */
@@ -60,6 +61,11 @@ int main(int argc, char** argv) {
 	int correct_array[1000][3]; 
 
 	FILE* fp = fopen("correct.txt", "rt");
+	if(fp == NULL){
+		perror("Error opening correct.txt");
+		return 1;
+	}
+
 	char* buffer = (char*)malloc(20 * sizeof(char));
 	int count = 0;
 	int array_count = 0;
@@ -89,6 +95,11 @@ int main(int argc, char** argv) {
 	
     /* while loop */
 	fp = fopen(argv[1], "rt");
+	if(fp == NULL){
+		perror("Error opening input file");
+		return 1;
+	}
+
 	int logical_address = 0;
 	while(fscanf(fp, "%d", &logical_address) != -1) {
 		/* read logical address from file addresses.txt */
@@ -138,10 +149,8 @@ int main(int argc, char** argv) {
 			//increment page fault
 			n_pagefault++;
 			// remove page from stack and use it
-			
 			if(!is_empty()) {
 				frame_num = pop();
-				
 			} else {
 				//select frame to replace using page replacement algorithm
 				frame_num = 0; 	//FOR NOW JUST REPLACES FRAME 0 
@@ -156,15 +165,15 @@ int main(int argc, char** argv) {
 				fclose(bstore_fp);
 				return 1;
 			}
-			
-			if(fseek(bstore_fp, (page_num << 8), SEEK_SET) != 0){
-				printf("Error seeking BACKING_STORE.bin %d", frame_num);
+
+			if(fseek(bstore_fp, page_num, SEEK_SET) != 0){
+				perror("Error seeking BACKING_STORE.bin");
 				fclose(bstore_fp);
 				return 1;
 			}
 			//move to page number
 			//store 256 bytes into physical memory frame number
-			if(fread(&P_MEM[(frame_num << 8)], sizeof(char), PAGE_SIZE, bstore_fp) != PAGE_SIZE){
+			if(fread(&P_MEM[(page_num << 8)], sizeof(char), PAGE_SIZE, bstore_fp) != PAGE_SIZE){
 				perror("Error reading BACKING_STORE.bin");
 				fclose(bstore_fp);
 				return 1;
@@ -179,7 +188,7 @@ int main(int argc, char** argv) {
 			TLB[TLB_counter][1] = frame_num;
 			TLB_counter = (TLB_counter + 1) % TLB_SIZE;
 			//printf("%d %d\n", frame_num, page_num);
-			fclose(bstore_fp);
+
 		}
 
 		/* get physical address */
@@ -187,7 +196,7 @@ int main(int argc, char** argv) {
 
 		/* compare logical and physical address from correct array  */
 		for(int i = 0; i < n_row; i++) {
-			if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address && correct_array[i][2] == P_MEM[physical_address]) {
+			if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address) {
 				is_correct++;
 				// printf("physical: %d %d\n", physical_address, P_MEM[physical_address]);
 				break;
