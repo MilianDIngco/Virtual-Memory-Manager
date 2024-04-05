@@ -14,12 +14,16 @@ int stack_head = N_PAGE;
 char P_MEM[P_MEM_SIZE];
 int n_pagefault = 0;
 
+int is_correct = 0;
+
 int check(int* bitmap, int pos) {
     return *bitmap & (1 << pos);
 }
 
 int pop() {
-	return AVAIL_FRAME[stack_head--];
+	int frame_num = AVAIL_FRAME[stack_head];
+	AVAIL_FRAME[stack_head--] = -1;
+	return frame_num;
 }
 
 void push(int frame_num) {
@@ -39,7 +43,7 @@ int main(int argc, char** argv) {
 
 	/* set available frame stack*/
 	for(int i = 0; i < N_PAGE; i++) {
-		AVAIL_FRAME[i] = i;
+		AVAIL_FRAME[i] = 256 - i;
 	}
 
     /* store correct.txt into a 2d int array */
@@ -75,27 +79,27 @@ int main(int argc, char** argv) {
 	fclose(fp);
 	free(buffer);
 	
-    /* create stack with all available frames */
-
     /* while loop */
 	fp = fopen(argv[1], "rt");
 	int logical_address = 0;
 	while(fscanf(fp, "%d", &logical_address) != -1) {
     /* read logical address from file addresses.txt */
 	
-			printf("%d\n", logical_address);
+	//printf("%d\n", logical_address);
 
     // extract offset value teehee
 		int offset = 0;
 		for(int i = 0; i < 8; i++){
 			offset += check(&logical_address, i);
 		}
- 
+
 	// extract page number hoohoo
 		int page_num = 0;
 		for(int i = 8; i < 16; i++) {
-			page_num += ((check(&logical_address, i) != 0) ? pow(2, i - 8) : 0);
+			page_num += (check(&logical_address, i) >> 8);
 		}
+
+	
 
     /* check TLB */
     //increment TLB hit
@@ -107,10 +111,11 @@ int main(int argc, char** argv) {
 	for(int i = 0; i < N_PAGE; i++) {
 		if(PAGE_TABLE[i][0] == page_num && PAGE_TABLE[i][1] != 0) {
 			frame_num = i;
+			//printf("found: %d %d\n", i, page_num);
 			break;
 		}
 	}
-
+	int physical_address;
     /* if page fault, load from backing store */
     if(frame_num == -1) {
 		//increment page fault
@@ -121,29 +126,48 @@ int main(int argc, char** argv) {
 		} else {
 			//select frame to replace using page replacement algorithm
 			frame_num = 0; 	//FOR NOW JUST REPLACES FRAME 0 
+			printf("RAN OUT OF FRAMES");
 		}
 		
-		int physical_address = frame_num << 8;
-
+		physical_address = frame_num << 8;
+		
 		//LOADS FRAME INTO PHYSICAL MEMORY
 
+		//Adds it to page table
+		PAGE_TABLE[frame_num][0] = page_num;	
+		//sets valid/invalid bit to 1
+		PAGE_TABLE[frame_num][1] = 1;
+
+		//printf("%d %d\n", frame_num, page_num);
 
 	}
+
     /* get physical address */
-
+	physical_address = (frame_num << 8) + offset;
     /* compare logical and physical address from correct array  */
-
+	for(int i = 0; i < n_row; i++) {
+		if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address) {
+			is_correct++;
+			break;
+		}
+	}
+	
     /* sprintf logical address to out1.txt */
 
     /* sprintf physical address to out2.txt */
 
     /* sprintf byte value to out3.txt */
-
+	
 	}
 
+	// printf("---------------------------------------------");
+	// for(int i = 0; i < N_PAGE; i++) {
+	// 	printf("%d: %d\n", i, PAGE_TABLE[i][0]);
+	// }
+	// printf("---------------------------------------------");
     // FIGURE OUT PAGE REPLACEMENT LOL
 
-
+	
     return 0;
 
 }
