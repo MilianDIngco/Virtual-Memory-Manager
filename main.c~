@@ -39,9 +39,7 @@ int main(int argc, char** argv) {
 
 	fclose(fp);
 	free(buffer);
-	
-	//testing wsl push git`
-	
+
     /* create stack with all available frames */
 
     /* while loop */
