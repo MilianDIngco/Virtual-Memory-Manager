@@ -147,6 +147,10 @@ int main(int argc, char** argv) {
 			}
 			
 			//LOADS FRAME INTO PHYSICAL MEMORY
+			//open back store
+			//move to page number
+			//store 256 bytes into physical memory frame number
+
 			//Adds it to page table
 			PAGE_TABLE[frame_num][0] = page_num;	
 			//sets valid/invalid bit to 1
@@ -177,15 +181,15 @@ int main(int argc, char** argv) {
 			}
 		}
 
-		/* sprintf logical address to out1.txt */
+		/* fprintf logical address to out1.txt */
 		FILE* out = fopen("out1.txt", "a");
 		fprintf(out, "%d", logical_address);
 		fclose(out);
-		/* sprintf physical address to out2.txt */
+		/* fprintf physical address to out2.txt */
 		out = fopen("out2.txt", "a");
 		fprintf(out, "%d", physical_address);
 		fclose(out);
-		/* sprintf byte value to out3.txt */
+		/* fprintf byte value to out3.txt */
 		out = fopen("out3.txt", "a");
 		fprintf(out, "0");
 		fclose(out);
