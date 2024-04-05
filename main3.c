@@ -12,8 +12,6 @@ int TLB_counter = 0;
 int PAGE_TABLE[N_PAGE][2];	//[PAGE #][VALID/INVALID BIT]
 int AVAIL_FRAME[N_PAGE];
 int stack_head = N_PAGE - 1;	
-int USED_FRAME[N_PAGE];
-int used_head = 0;
 char P_MEM[P_MEM_SIZE];
 int n_pagefault = 0;
 int tlb_hit = 0;
@@ -145,13 +143,9 @@ int main(int argc, char** argv) {
 				USED_FRAME[used_head] = frame_num;
                 used_head = (used_head + 1) % N_PAGE;
 			} else {
-				//FIFO SELECTION ALGORITHM
-                //Will only run if available frames is empty : therefore used frames is full
-                //Used head pointer will point to the first used frame
-                //set old frame to invalid
-                PAGE_TABLE[USED_FRAME[used_head]][1] = 0;
-				frame_num = USED_FRAME[used_head];
-                used_head = (used_head + 1) % N_PAGE;
+				//LRU REPLACEMENT ALGORITHM
+
+				frame_num = /* VICTIM FRAME */
 			}
 			
 			//LOADS FRAME INTO PHYSICAL MEMORY
