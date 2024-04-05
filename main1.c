@@ -8,11 +8,13 @@
 #define N_PAGE 256
 
 int TLB[TLB_SIZE][2];		//[PAGE #][FRAME #]
+int TLB_counter = 0;
 int PAGE_TABLE[N_PAGE][2];	//[PAGE #][VALID/INVALID BIT]
 int AVAIL_FRAME[N_PAGE];
 int stack_head = N_PAGE;	
 char P_MEM[P_MEM_SIZE];
 int n_pagefault = 0;
+int tlb_hit = 0;
 int page_hit = 0;
 
 int is_correct = 0;
@@ -111,7 +113,7 @@ int main(int argc, char** argv) {
 		for(int i = 0; i < TLB_SIZE; i++) {
 			if(TLB[i][0] == page_num) {
 				//increment page hit
-				page_hit++;
+				tlb_hit++;
 				frame_num = TLB[i][1];
 				break;
 			}
@@ -124,7 +126,7 @@ int main(int argc, char** argv) {
 			for(int i = 0; i < N_PAGE; i++) {
 				if(PAGE_TABLE[i][0] == page_num && PAGE_TABLE[i][1] != 0) {
 					frame_num = i;
-					//printf("found: %d %d\n", i, page_num);
+					page_hit++;
 					break;
 				}
 			}
@@ -149,7 +151,10 @@ int main(int argc, char** argv) {
 			PAGE_TABLE[frame_num][0] = page_num;	
 			//sets valid/invalid bit to 1
 			PAGE_TABLE[frame_num][1] = 1;
-
+			//Add it to the TLB
+			TLB[TLB_counter][0] = page_num;
+			TLB[TLB_counter][1] = frame_num;
+			TLB_counter = (TLB_counter + 1) % TLB_SIZE;
 			//printf("%d %d\n", frame_num, page_num);
 
 		}
@@ -192,7 +197,7 @@ int main(int argc, char** argv) {
 	// }
 	// printf("---------------------------------------------");
     // FIGURE OUT PAGE REPLACEMENT LOL
-	printf("%d %d %d\n", is_correct, page_hit, n_pagefault);
+	printf("%d %d %d %d\n", is_correct, tlb_hit, page_hit, n_pagefault);
 
 	
     return 0;
