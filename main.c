@@ -1,6 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define TLB_SIZE 15
+#define P_MEM_SIZE 65536
+#define PAGE_SIZE 256
+#define N_PAGE 256
+
+int TLB[TLB_SIZE][2];
+int PAGE_TABLE[N_PAGE];
+int AVAIL_FRAME[N_PAGE];
+char P_MEM[P_MEM_SIZE];
+
 int check(int* bitmap, int pos) {
     return *bitmap & (1 << pos);
 }
