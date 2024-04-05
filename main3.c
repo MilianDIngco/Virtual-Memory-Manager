@@ -217,7 +217,7 @@ int main(int argc, char** argv) {
 
 	// printf("%d %d %d %d\n", is_correct, tlb_hit, page_hit, n_pagefault);
     printf("Page Fault Rate: %f\n", ((float) n_pagefault / n_req));
-    printf("TLB Hit Rate: %f", ((float)tlb_hit / n_req));
+    printf("TLB Hit Rate: %f\n", ((float)tlb_hit / n_req));
 	
     return 0;
 }
