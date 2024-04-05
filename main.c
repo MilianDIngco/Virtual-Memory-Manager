@@ -85,13 +85,13 @@ int main(int argc, char** argv) {
 	
 			printf("%d\n", logical_address);
 
-    // extract offset value teehee
+    // extract offset value teehee, digits 0-7
 		int offset = 0;
 		for(int i = 0; i < 8; i++){
 			offset += check(&logical_address, i);
 		}
  
-	// extract page number hoohoo
+	// extract page number hoohoo, digits 8-15
 		int page_num = 0;
 		for(int i = 8; i < 16; i++) {
 			page_num += ((check(&logical_address, i) != 0) ? pow(2, i - 8) : 0);
@@ -123,8 +123,19 @@ int main(int argc, char** argv) {
 			frame_num = 0; 	//FOR NOW JUST REPLACES FRAME 0 
 		}
 		
+		//randomly seek to certian positions of BACKING_STORE
 		int physical_address = frame_num << 8;
 
+		FILE* bstore_fp = fopen("BACKING_STORE.bin", "rb");
+		fseek(bstore_fp, physical_address, SEEK_SET);
+
+		char buffer[PAGE_SIZE]; //page
+
+		// size_t bytes_read = fread(buffer, 1, sizeof(buffer), bstore_fp);
+		char test_byte = fread(&test_byte, 1, 1, bstore_fp);
+		
+		printf("Testing One Byte: %02x\n", test_byte);
+		fclose(bstore_fp);
 		//LOADS FRAME INTO PHYSICAL MEMORY
 
 
