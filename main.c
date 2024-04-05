@@ -129,10 +129,7 @@ int main(int argc, char** argv) {
 			printf("RAN OUT OF FRAMES");
 		}
 		
-		physical_address = frame_num << 8;
-		
 		//LOADS FRAME INTO PHYSICAL MEMORY
-
 		//Adds it to page table
 		PAGE_TABLE[frame_num][0] = page_num;	
 		//sets valid/invalid bit to 1
@@ -159,8 +156,6 @@ int main(int argc, char** argv) {
 			break;
 		}
 	}
-
-	
 	
     /* sprintf logical address to out1.txt */
 	FILE* out = fopen("out1.txt", "a");
