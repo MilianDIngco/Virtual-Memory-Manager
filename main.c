@@ -144,20 +144,22 @@ int main(int argc, char** argv) {
 
     /* get physical address */
 	physical_address = (frame_num << 8) + offset;
-    /* compare logical and physical address from correct array  */
-	for(int i = 0; i < n_row; i++) {
-		if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address) {
-			is_correct++;
-			break;
-		}
-	}
 
+	//get physical value
 	FILE* bstorefp = fopen("BACKING_STORE.bin", "rb");
 	fseek(bstorefp, logical_address, SEEK_SET);
 	char value;
 
 	fread(&value, sizeof(char), 1, bstorefp);
-	printf("%d %d\n", logical_address, (int)value);
+
+    /* compare logical and physical address from correct array  */
+	for(int i = 0; i < n_row; i++) {
+		if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address && correct_array[i][2] == (int)value) {
+			is_correct++;
+			break;
+		}
+	}
+
 	
 	
     /* sprintf logical address to out1.txt */
@@ -180,7 +182,7 @@ int main(int argc, char** argv) {
 	// }
 	// printf("---------------------------------------------");
     // FIGURE OUT PAGE REPLACEMENT LOL
-	// printf("%d", is_correct);
+	printf("%d", is_correct);
 
 	
     return 0;
