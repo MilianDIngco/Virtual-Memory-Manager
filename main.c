@@ -132,21 +132,7 @@ int main(int argc, char** argv) {
 		physical_address = frame_num << 8;
 		
 		//LOADS FRAME INTO PHYSICAL MEMORY
-		//randomly seek to certian positions of BACKING_STORE
-		int physical_address = frame_num << 8;
 
-		FILE* bstore_fp = fopen("BACKING_STORE.bin", "rb");
-		fseek(bstore_fp, physical_address, SEEK_SET);
-
-		char buffer[PAGE_SIZE]; //page
-
-		// size_t bytes_read = fread(buffer, 1, sizeof(buffer), bstore_fp);
-		char test_byte = fread(&test_byte, 1, 1, bstore_fp);
-		physical_address = frame_num << 8;
-		
-		printf("Testing One Byte: %02x\n", test_byte);
-		fclose(bstore_fp);
-		
 		//Adds it to page table
 		PAGE_TABLE[frame_num][0] = page_num;	
 		//sets valid/invalid bit to 1
@@ -165,6 +151,14 @@ int main(int argc, char** argv) {
 			break;
 		}
 	}
+
+	FILE* bstorefp = fopen("BACKING_STORE.bin", "rb");
+	fseek(bstorefp, logical_address, SEEK_SET);
+	char value;
+
+	fread(&value, sizeof(char), 1, bstorefp);
+	printf("%d %d\n", logical_address, (int)value);
+	
 	
     /* sprintf logical address to out1.txt */
 	FILE* out = fopen("out1.txt", "a");
