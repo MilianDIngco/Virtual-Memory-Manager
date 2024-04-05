@@ -129,10 +129,7 @@ int main(int argc, char** argv) {
 			printf("RAN OUT OF FRAMES");
 		}
 		
-		physical_address = frame_num << 8;
-		
 		//LOADS FRAME INTO PHYSICAL MEMORY
-
 		//Adds it to page table
 		PAGE_TABLE[frame_num][0] = page_num;	
 		//sets valid/invalid bit to 1
@@ -153,11 +150,33 @@ int main(int argc, char** argv) {
 	}
 
 	FILE* bstorefp = fopen("BACKING_STORE.bin", "rb");
-	fseek(bstorefp, logical_address, SEEK_SET);
-	char value;
+	if(bstore_fp == NULL){
+			perror("Error opening file");
+			return 1;
+	}
 
-	fread(&value, sizeof(char), 1, bstorefp);
-	printf("%d %d\n", logical_address, (int)value);
+
+	if(fseek(bstore_fp, logical_address, SEEK_SET) != 0){
+			perror("Error seeking to position");
+			fclose(bstore_fp);
+			return 1;
+	}
+
+	//char buffer[PAGE_SIZE]; //page
+
+
+	// size_t bytes_read = fread(buffer, 1, sizeof(buffer), bstore_fp);
+		unsigned char test_byte;
+		size_t bytes_read = fread(&test_byte, sizeof(char), 1, bstore_fp);
+		
+		//testing bytes_read
+		if(bytes_read != 1){
+			perror("Error reading byte");
+			fclose(bstore_fp);
+		}
+		
+		printf("%d %d\n", logical_address, (int)value);
+		fclose(bstore_fp);
 	
 	
     /* sprintf logical address to out1.txt */
