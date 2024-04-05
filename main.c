@@ -49,9 +49,22 @@ int main(int argc, char** argv) {
     /* read logical address from file addresses.txt */
 	
 			printf("%d\n", logical_address);
-    // extract page number
 
     // extract offset value
+		int offset = 0;
+
+		printf("\n");
+		for(int i = 0; i < 8; i++){
+			offset += check(&logical_address, i);
+		}
+ 
+	// extract page number
+		int page_num = 0;
+
+		printf("\n");
+		for(int i = 8; i < 16; i++) {
+			page_num += check(&logical_address, i);
+		}
 
     /* check TLB */
     //increment TLB hit
