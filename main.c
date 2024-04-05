@@ -50,18 +50,14 @@ int main(int argc, char** argv) {
 	
 			printf("%d\n", logical_address);
 
-    // extract offset value
+    // extract offset value teehee
 		int offset = 0;
-
-		printf("\n");
 		for(int i = 0; i < 8; i++){
 			offset += check(&logical_address, i);
 		}
  
-	// extract page number
+	// extract page number hoohoo
 		int page_num = 0;
-
-		printf("\n");
 		for(int i = 8; i < 16; i++) {
 			page_num += check(&logical_address, i);
 		}
