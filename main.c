@@ -145,11 +145,18 @@ int main(int argc, char** argv) {
     /* compare logical and physical address from correct array  */
 
     /* sprintf logical address to out1.txt */
-
-    /* sprintf physical address to out2.txt */
-
+	FILE* out = fopen("out1.txt", "a");
+    fprintf(out, "%d", logical_address);
+	fclose(out);
+	/* sprintf physical address to out2.txt */
+	out = fopen("out2.txt", "a");
+	fprintf(out, "%d", physical_address);
+	fclose(out);
     /* sprintf byte value to out3.txt */
 
+	out = fopen("out3.txt", "a");
+	fprintf(out, "0");
+	fclose(out);
 	}
 
     // FIGURE OUT PAGE REPLACEMENT LOL
