@@ -13,6 +13,7 @@ int AVAIL_FRAME[N_PAGE];
 int stack_head = N_PAGE;	
 char P_MEM[P_MEM_SIZE];
 int n_pagefault = 0;
+int page_hit = 0;
 
 int is_correct = 0;
 
@@ -46,6 +47,11 @@ int main(int argc, char** argv) {
 		AVAIL_FRAME[i] = 256 - i;
 	}
 
+	/* set TLB */
+	for(int i = 0; i < TLB_SIZE; i++) {
+		TLB[i][0] = -1;
+		TLB[i][1] = -1;
+	}
     /* store correct.txt into a 2d int array */
 	int n_row = 1000;
 	int n_col = 3;
@@ -100,21 +106,29 @@ int main(int argc, char** argv) {
 		}
 
 	
-
+	int frame_num = -1;
     /* check TLB */
-    //increment TLB hit
+	for(int i = 0; i < TLB_SIZE; i++) {
+		if(TLB[i][0] == page_num) {
+			//increment page hit
+			page_hit++;
+			frame_num = TLB[i][1];
+			break;
+		}
 
     /* if TLB miss check page table */
 	//USES INVERTED PAGE TABLE
 	// loop through page table until find page number, return index
-	int frame_num = -1;
-	for(int i = 0; i < N_PAGE; i++) {
-		if(PAGE_TABLE[i][0] == page_num && PAGE_TABLE[i][1] != 0) {
-			frame_num = i;
-			//printf("found: %d %d\n", i, page_num);
-			break;
+	if(frame_num < 0) {
+		for(int i = 0; i < N_PAGE; i++) {
+			if(PAGE_TABLE[i][0] == page_num && PAGE_TABLE[i][1] != 0) {
+				frame_num = i;
+				//printf("found: %d %d\n", i, page_num);
+				break;
+			}
 		}
 	}
+	
 	int physical_address;
     /* if page fault, load from backing store */
     if(frame_num == -1) {
@@ -157,8 +171,6 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	//testing
-	
     /* sprintf logical address to out1.txt */
 	FILE* out = fopen("out1.txt", "a");
     fprintf(out, "%d", logical_address);
@@ -179,7 +191,7 @@ int main(int argc, char** argv) {
 	// }
 	// printf("---------------------------------------------");
     // FIGURE OUT PAGE REPLACEMENT LOL
-	printf("%d", is_correct);
+	printf("%d %d %d\n", is_correct, page_hit, n_pagefault);
 
 	
     return 0;
