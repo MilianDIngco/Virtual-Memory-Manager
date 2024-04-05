@@ -32,22 +32,23 @@ int main(int argc, char** argv) {
 	
 
 	for(int i = 0; i < n_row; i++) {
-		printf("V: %d  ", correct_array[i][0]);
-		printf("P: %d  ", correct_array[i][1]);
-		printf("Val: %d\n", correct_array[i][2]);
+		//printf("V: %d  ", correct_array[i][0]);
+		//printf("P: %d  ", correct_array[i][1]);
+		//printf("Val: %d\n", correct_array[i][2]);
 	}
 
 	fclose(fp);
 	free(buffer);
 	
-	//testing wsl push git`
-	
     /* create stack with all available frames */
 
     /* while loop */
-
+	fp = fopen("addresses.txt", "rt");
+	int logical_address = 0;
+	while(fscanf(fp, "%d", &logical_address) != -1) {
     /* read logical address from file addresses.txt */
-
+	
+			printf("%d\n", logical_address);
     // extract page number
 
     // extract offset value
@@ -72,6 +73,7 @@ int main(int argc, char** argv) {
 
     /* sprintf byte value to out3.txt */
 
+	}
 
     // FIGURE OUT PAGE REPLACEMENT LOL
 
