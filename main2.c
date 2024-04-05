@@ -151,22 +151,22 @@ int main(int argc, char** argv) {
 			}
 			
 			//LOADS FRAME INTO PHYSICAL MEMORY
-            			//open back store
+            //open back store
 			FILE* bstore_fp = fopen("BACKING_STORE.bin", "rb");
 			if(bstore_fp == NULL){ //error checking
 				perror("Error opening BACKING_STORE.bin");
 				fclose(bstore_fp);
 				return 1;
 			}
-
+			
 			if(fseek(bstore_fp, (page_num << 8), SEEK_SET) != 0){
-				perror("Error seeking BACKING_STORE.bin");
+				printf("Error seeking BACKING_STORE.bin %d", frame_num);
 				fclose(bstore_fp);
 				return 1;
 			}
 			//move to page number
 			//store 256 bytes into physical memory frame number
-			if(fread(&P_MEM[(page_num << 8)], sizeof(char), PAGE_SIZE, bstore_fp) != PAGE_SIZE){
+			if(fread(&P_MEM[(frame_num << 8)], sizeof(char), PAGE_SIZE, bstore_fp) != PAGE_SIZE){
 				perror("Error reading BACKING_STORE.bin");
 				fclose(bstore_fp);
 				return 1;
