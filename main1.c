@@ -156,7 +156,7 @@ int main(int argc, char** argv) {
 				return 1;
 			}
 			
-			if(fseek(bstore_fp, (frame_num << 8), SEEK_SET) != 0){
+			if(fseek(bstore_fp, (page_num << 8), SEEK_SET) != 0){
 				printf("Error seeking BACKING_STORE.bin %d", frame_num);
 				fclose(bstore_fp);
 				return 1;
@@ -188,6 +188,7 @@ int main(int argc, char** argv) {
 		for(int i = 0; i < n_row; i++) {
 			if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address && correct_array[i][2] == P_MEM[physical_address]) {
 				is_correct++;
+				// printf("physical: %d %d\n", physical_address, P_MEM[physical_address]);
 				break;
 			}
 		}
