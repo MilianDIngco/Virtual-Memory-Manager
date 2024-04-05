@@ -8,6 +8,37 @@ int check(int* bitmap, int pos) {
 int main(int argc, char** argv) {
 
     /* store correct.txt into a 2d int array */
+	int n_row = 1000;
+	int n_col = 3;
+	int correct_array[1000][3]; 
+
+	FILE* fp = fopen("correct.txt", "rt");
+	char* buffer = (char*)malloc(20 * sizeof(char));
+	int count = 0;
+	int array_count = 0;
+	while(fscanf(fp, "%s", buffer) != -1) {
+		if(count % 8 == 2) {
+			//Virtual Address
+			correct_array[array_count][0] = atoi(buffer);
+		} else if(count % 8 == 5) {
+			//Physical Address
+			correct_array[array_count][1] = atoi(buffer);
+		} else if(count % 8 == 7) {
+			//Value
+			correct_array[array_count++][2] = atoi(buffer);
+		}
+		count++;
+	}
+	
+
+	for(int i = 0; i < n_row; i++) {
+		printf("V: %d  ", correct_array[i][0]);
+		printf("P: %d  ", correct_array[i][1]);
+		printf("Val: %d\n", correct_array[i][2]);
+	}
+
+	fclose(fp);
+	free(buffer);
 
     /* create stack with all available frames */
 
