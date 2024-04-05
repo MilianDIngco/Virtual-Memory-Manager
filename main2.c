@@ -129,6 +129,7 @@ int main(int argc, char** argv) {
 				if(PAGE_TABLE[i][0] == page_num && PAGE_TABLE[i][1] != 0) {
 					frame_num = i;
 					page_hit++;
+					
 					break;
 				}
 			}

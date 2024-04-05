@@ -3,15 +3,16 @@
 #include <math.h>
 
 #define TLB_SIZE 16
-#define P_MEM_SIZE 32768
+#define P_MEM_SIZE 65536
 #define PAGE_SIZE 256
-#define N_PAGE 128
+#define N_PAGE 256
 
 int TLB[TLB_SIZE][2];		//[PAGE #][FRAME #]
 int TLB_counter = 0;
 int PAGE_TABLE[N_PAGE][2];	//[PAGE #][VALID/INVALID BIT]
 int AVAIL_FRAME[N_PAGE];
 int stack_head = N_PAGE - 1;	
+int COUNT[N_PAGE];
 char P_MEM[P_MEM_SIZE];
 int n_pagefault = 0;
 int tlb_hit = 0;
@@ -42,11 +43,13 @@ int main(int argc, char** argv) {
 	/* set all valid/invalid bits to false */
 	for(int i = 0; i < N_PAGE; i++) {
 		PAGE_TABLE[i][1] = 0;
+		AVAIL_FRAME[i] = N_PAGE - 1 - i;
+		COUNT[i] = 0;
 	}
 
 	/* set available frame stack*/
 	for(int i = 0; i < N_PAGE; i++) {
-		AVAIL_FRAME[i] = N_PAGE - 1 - i;
+		
 	}
 
 	/* set TLB */
@@ -113,6 +116,7 @@ int main(int argc, char** argv) {
 		for(int i = 0; i < TLB_SIZE; i++) {
 			if(TLB[i][0] == page_num) {
 				//increment page hit
+				COUNT[TLB[i][1]]++;
 				tlb_hit++;
 				frame_num = TLB[i][1];
 				break;
@@ -125,6 +129,7 @@ int main(int argc, char** argv) {
 		if(frame_num < 0) {
 			for(int i = 0; i < N_PAGE; i++) {
 				if(PAGE_TABLE[i][0] == page_num && PAGE_TABLE[i][1] != 0) {
+					COUNT[i]++;
 					frame_num = i;
 					page_hit++;
 					break;
@@ -140,12 +145,19 @@ int main(int argc, char** argv) {
 			// remove page from stack and use it
 			if(!is_empty()) {
 				frame_num = pop();
-				USED_FRAME[used_head] = frame_num;
-                used_head = (used_head + 1) % N_PAGE;
 			} else {
 				//LRU REPLACEMENT ALGORITHM
-
-				frame_num = /* VICTIM FRAME */
+				//find minimum of count
+				int min = COUNT[0];
+				int min_index = 0;
+				for(int i = 0; i < N_PAGE; i++) {
+					if(COUNT[i] < min) {
+						min = COUNT[i];
+						min_index = i;
+					}
+				}
+				frame_num = min_index; /* VICTIM FRAME */
+				COUNT[min_index] = 0;
 			}
 			
 			//LOADS FRAME INTO PHYSICAL MEMORY
