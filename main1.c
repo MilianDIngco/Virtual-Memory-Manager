@@ -155,14 +155,14 @@ int main(int argc, char** argv) {
 				return 1;
 			}
 
-			if(fseek(bstore_fp, logical_address, SEEK_SET) != 0){
+			if(fseek(bstore_fp, page_num, SEEK_SET) != 0){
 				perror("Error seeking BACKING_STORE.bin");
 				fclose(bstore_fp);
 				return 1;
 			}
 			//move to page number
 			//store 256 bytes into physical memory frame number
-			if(fread(&P_MEM + (page_num << 8), sizeof(char), PAGE_SIZE, bstore_fp) != 1){
+			if(fread(&P_MEM[(page_num << 8)], sizeof(char), PAGE_SIZE, bstore_fp) != PAGE_SIZE){
 				perror("Error reading BACKING_STORE.bin");
 				fclose(bstore_fp);
 				return 1;
