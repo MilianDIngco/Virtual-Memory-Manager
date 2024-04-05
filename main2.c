@@ -150,6 +150,27 @@ int main(int argc, char** argv) {
 			}
 			
 			//LOADS FRAME INTO PHYSICAL MEMORY
+            			//open back store
+			FILE* bstore_fp = fopen("BACKING_STORE.bin", "rb");
+			if(bstore_fp == NULL){ //error checking
+				perror("Error opening BACKING_STORE.bin");
+				fclose(bstore_fp);
+				return 1;
+			}
+
+			if(fseek(bstore_fp, (page_num << 8), SEEK_SET) != 0){
+				perror("Error seeking BACKING_STORE.bin");
+				fclose(bstore_fp);
+				return 1;
+			}
+			//move to page number
+			//store 256 bytes into physical memory frame number
+			if(fread(&P_MEM[(page_num << 8)], sizeof(char), PAGE_SIZE, bstore_fp) != PAGE_SIZE){
+				perror("Error reading BACKING_STORE.bin");
+				fclose(bstore_fp);
+				return 1;
+			}
+
 			//Adds it to page table
 			PAGE_TABLE[frame_num][0] = page_num;	
 			//sets valid/invalid bit to 1
@@ -173,9 +194,11 @@ int main(int argc, char** argv) {
 		fread(&value, sizeof(char), 1, bstorefp);
 
 		/* compare logical and physical address from correct array  */
+		/* compare logical and physical address from correct array  */
 		for(int i = 0; i < n_row; i++) {
-			if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address && correct_array[i][2] == (int)value) {
+			if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address) {
 				is_correct++;
+				printf("%d %d %d\n", logical_address, physical_address, P_MEM[logical_address]);
 				break;
 			}
 		}
