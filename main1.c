@@ -186,10 +186,8 @@ int main(int argc, char** argv) {
 
 		/* compare logical and physical address from correct array  */
 		for(int i = 0; i < n_row; i++) {
-			if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address) {
+			if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address && correct_array[i][2] == P_MEM[physical_address]) {
 				is_correct++;
-				printf("hello??");
-				printf("%d %d %d\n", logical_address, physical_address, P_MEM[physical_address]);
 				break;
 			}
 		}
