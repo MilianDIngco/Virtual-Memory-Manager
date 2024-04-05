@@ -16,6 +16,7 @@ char P_MEM[P_MEM_SIZE];
 int n_pagefault = 0;
 int tlb_hit = 0;
 int page_hit = 0;
+int n_req = 0;
 
 int is_correct = 0;
 
@@ -91,7 +92,7 @@ int main(int argc, char** argv) {
 	int logical_address = 0;
 	while(fscanf(fp, "%d", &logical_address) != -1) {
 		/* read logical address from file addresses.txt */
-		
+		n_req++;
 		//printf("%d\n", logical_address);
 
 		// extract offset value teehee
@@ -195,26 +196,21 @@ int main(int argc, char** argv) {
 
 		/* fprintf logical address to out1.txt */
 		FILE* out = fopen("out1.txt", "a");
-		fprintf(out, "%d", logical_address);
+		fprintf(out, "%d\n", logical_address);
 		fclose(out);
 		/* fprintf physical address to out2.txt */
 		out = fopen("out2.txt", "a");
-		fprintf(out, "%d", physical_address);
+		fprintf(out, "%d\n", physical_address);
 		fclose(out);
 		/* fprintf byte value to out3.txt */
 		out = fopen("out3.txt", "a");
-		fprintf(out, "0");
+		fprintf(out, "%d\n", P_MEM[physical_address]);
 		fclose(out);
 	}
 
-	// printf("---------------------------------------------");
-	// for(int i = 0; i < N_PAGE; i++) {
-	// 	printf("%d: %d\n", i, PAGE_TABLE[i][0]);
-	// }
-	// printf("---------------------------------------------");
-    // FIGURE OUT PAGE REPLACEMENT LOL
-	printf("%d %d %d %d\n", is_correct, tlb_hit, page_hit, n_pagefault);
-
+	// printf("%d %d %d %d\n", is_correct, tlb_hit, page_hit, n_pagefault);
+ 	printf("Page Fault Rate: %f\n", ((float) n_pagefault / n_req));
+    printf("TLB Hit Rate: %f", ((float)tlb_hit / n_req));
 	
     return 0;
 }
