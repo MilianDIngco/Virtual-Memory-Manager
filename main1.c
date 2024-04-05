@@ -24,7 +24,7 @@ int check(int* bitmap, int pos) {
 }
 
 int pop() {
-	int frame_num = AVAIL_FRAME[stack_head];
+	int frame_num = AVAIL_FRAME[stack_head--];
 	return frame_num;
 }
 
@@ -188,6 +188,7 @@ int main(int argc, char** argv) {
 		for(int i = 0; i < n_row; i++) {
 			if(correct_array[i][1] == physical_address && correct_array[i][0] == logical_address) {
 				is_correct++;
+				printf("hello??");
 				printf("%d %d %d\n", logical_address, physical_address, P_MEM[physical_address]);
 				break;
 			}

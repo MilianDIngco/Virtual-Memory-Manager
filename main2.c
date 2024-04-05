@@ -147,6 +147,7 @@ int main(int argc, char** argv) {
 				//select frame to replace using page replacement algorithm
 				frame_num = USED_FRAME[start_used]; //replaces the next frame | i think this works bc the only way it would get here is if all frames are used, therefore USED_FRAME is full and start_used points to the last used one (first in) 
 				printf("RAN OUT OF FRAMES");
+                //set replaced frame to invalid
 			}
 			
 			//LOADS FRAME INTO PHYSICAL MEMORY
