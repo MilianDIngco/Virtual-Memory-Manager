@@ -47,11 +47,6 @@ int main(int argc, char** argv) {
 		COUNT[i] = 0;
 	}
 
-	/* set available frame stack*/
-	for(int i = 0; i < N_PAGE; i++) {
-		
-	}
-
 	/* set TLB */
 	for(int i = 0; i < TLB_SIZE; i++) {
 		TLB[i][0] = -1;
