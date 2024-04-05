@@ -3,9 +3,9 @@
 #include <math.h>
 
 #define TLB_SIZE 16
-#define P_MEM_SIZE 65536
+#define P_MEM_SIZE 32768
 #define PAGE_SIZE 256
-#define N_PAGE 256
+#define N_PAGE 128
 
 int TLB[TLB_SIZE][2];		//[PAGE #][FRAME #]
 int TLB_counter = 0;
@@ -142,9 +142,10 @@ int main(int argc, char** argv) {
 			// remove page from stack and use it
 			if(!is_empty()) {
 				frame_num = pop();
+                USED_FRAME[start_used++] = frame_num;
 			} else {
 				//select frame to replace using page replacement algorithm
-				frame_num = 0; 	//FOR NOW JUST REPLACES FRAME 0 
+				frame_num = USED_FRAME[start_used]; //replaces the next frame | i think this works bc the only way it would get here is if all frames are used, therefore USED_FRAME is full and start_used points to the last used one (first in) 
 				printf("RAN OUT OF FRAMES");
 			}
 			
