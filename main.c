@@ -156,6 +156,8 @@ int main(int argc, char** argv) {
 			break;
 		}
 	}
+
+	//testing
 	
     /* sprintf logical address to out1.txt */
 	FILE* out = fopen("out1.txt", "a");
