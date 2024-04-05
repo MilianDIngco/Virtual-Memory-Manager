@@ -11,7 +11,9 @@ int TLB[TLB_SIZE][2];		//[PAGE #][FRAME #]
 int TLB_counter = 0;
 int PAGE_TABLE[N_PAGE][2];	//[PAGE #][VALID/INVALID BIT]
 int AVAIL_FRAME[N_PAGE];
-int stack_head = N_PAGE;	
+int stack_head = N_PAGE;
+int USED_FRAME[N_PAGE];
+int start_used = 0;
 char P_MEM[P_MEM_SIZE];
 int n_pagefault = 0;
 int tlb_hit = 0;
@@ -177,15 +179,15 @@ int main(int argc, char** argv) {
 			}
 		}
 
-		/* sprintf logical address to out1.txt */
+		/* fprintf logical address to out1.txt */
 		FILE* out = fopen("out1.txt", "a");
 		fprintf(out, "%d", logical_address);
 		fclose(out);
-		/* sprintf physical address to out2.txt */
+		/* fprintf physical address to out2.txt */
 		out = fopen("out2.txt", "a");
 		fprintf(out, "%d", physical_address);
 		fclose(out);
-		/* sprintf byte value to out3.txt */
+		/* fprintf byte value to out3.txt */
 		out = fopen("out3.txt", "a");
 		fprintf(out, "0");
 		fclose(out);
