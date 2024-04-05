@@ -149,7 +149,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	FILE* bstorefp = fopen("BACKING_STORE.bin", "rb");
+	FILE* bstore_fp = fopen("BACKING_STORE.bin", "rb");
 	if(bstore_fp == NULL){
 			perror("Error opening file");
 			return 1;
@@ -175,7 +175,7 @@ int main(int argc, char** argv) {
 			fclose(bstore_fp);
 		}
 		
-		printf("%d %d\n", logical_address, (int)value);
+		printf("%d %d\n", logical_address, (int)test_byte);
 		fclose(bstore_fp);
 	
 	
