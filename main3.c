@@ -3,9 +3,9 @@
 #include <math.h>
 
 #define TLB_SIZE 16
-#define P_MEM_SIZE 65536
+#define P_MEM_SIZE 8192
 #define PAGE_SIZE 256
-#define N_PAGE 256
+#define N_PAGE 32
 
 int TLB[TLB_SIZE][2];		//[PAGE #][FRAME #]
 int TLB_counter = 0;
@@ -18,6 +18,8 @@ int n_pagefault = 0;
 int tlb_hit = 0;
 int page_hit = 0;
 int n_req = 0;
+char values[1000];
+int value_count = 0;
 
 int is_correct = 0;
 
@@ -35,7 +37,7 @@ void push(int frame_num) {
 }
 
 int is_empty() {
-	return stack_head == 0;
+	return stack_head == -1;
 }
 
 int main(int argc, char** argv) {
@@ -140,6 +142,7 @@ int main(int argc, char** argv) {
 			// remove page from stack and use it
 			if(!is_empty()) {
 				frame_num = pop();
+				// printf("loaded: ");
 			} else {
 				//LRU REPLACEMENT ALGORITHM
 				//find minimum of count
@@ -153,8 +156,10 @@ int main(int argc, char** argv) {
 				}
 				frame_num = min_index; /* VICTIM FRAME */
 				COUNT[min_index] = 0;
+				PAGE_TABLE[min_index][1] = 0;
+				// printf("replaced: ");
 			}
-			
+			// printf("victim: %d %d\n", frame_num, logical_address);
 			//LOADS FRAME INTO PHYSICAL MEMORY
 			//open back store
 			FILE* bstore_fp = fopen("BACKING_STORE.bin", "rb");
@@ -192,14 +197,8 @@ int main(int argc, char** argv) {
 		/* get physical address */
 		physical_address = (frame_num << 8) + offset;
 
-		/* compare logical and physical address from correct array  */
-		for(int i = 0; i < n_row; i++) {
-			if(correct_array[i][0] == logical_address && correct_array[i][2] == P_MEM[physical_address]) {
-				is_correct++;
-				//printf("virtual: %d %d\n", logical_address, P_MEM[physical_address]);
-				break;
-			}
-		}
+		//keep track of the order of values
+		values[value_count++] = P_MEM[physical_address];
 
 		/* fprintf logical address to out1.txt */
 		FILE* out = fopen("out1.txt", "a");
@@ -213,6 +212,15 @@ int main(int argc, char** argv) {
 		out = fopen("out3.txt", "a");
 		fprintf(out, "%d\n", P_MEM[physical_address]);
 		fclose(out);
+	}
+
+	printf("--------------------\n");
+
+	for(int i = 0; i < 1000; i++) {
+		if(values[i] == correct_array[i][2]) 
+			is_correct++;
+		else 
+			printf("%d, %d, %d: %d %d \n", i, correct_array[i][0], correct_array[i][1], values[i], correct_array[i][2]);
 	}
 
 	printf("Num Correct: %d, Num TLB Hit: %d, Num Page Hit: %d, Num Page Fault %d\n", is_correct, tlb_hit, page_hit, n_pagefault);
