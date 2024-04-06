@@ -214,13 +214,11 @@ int main(int argc, char** argv) {
 		fclose(out);
 	}
 
-	printf("--------------------\n");
-
 	for(int i = 0; i < 1000; i++) {
 		if(values[i] == correct_array[i][2]) 
 			is_correct++;
-		else 
-			printf("%d, %d, %d: %d %d \n", i, correct_array[i][0], correct_array[i][1], values[i], correct_array[i][2]);
+		// else 
+		// 	printf("%d, %d, %d: %d %d \n", i, correct_array[i][0], correct_array[i][1], values[i], correct_array[i][2]);
 	}
 
 	printf("Num Correct: %d, Num TLB Hit: %d, Num Page Hit: %d, Num Page Fault %d\n", is_correct, tlb_hit, page_hit, n_pagefault);
