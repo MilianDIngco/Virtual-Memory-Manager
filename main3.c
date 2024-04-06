@@ -42,6 +42,14 @@ int is_empty() {
 
 int main(int argc, char** argv) {
 
+	//clears out files
+	FILE* clear_out = fopen("out1.txt", "w");
+	fclose(clear_out);
+	clear_out = fopen("out2.txt", "w");
+	fclose(clear_out);
+	clear_out = fopen("out3.txt", "w");
+	fclose(clear_out);
+
 	/* set all valid/invalid bits to false */
 	for(int i = 0; i < N_PAGE; i++) {
 		PAGE_TABLE[i][1] = 0;
